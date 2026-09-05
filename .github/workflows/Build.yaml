@@ -16,14 +16,23 @@ jobs:
         with:
           channel: 'stable'
       
-      # هذا الأمر سيقوم بإنشاء مجلد android وكل الملفات الناقصة تلقائياً
+      # 1. إنشاء ملفات نظام أندرويد
       - run: flutter create . --platforms=android
 
+      # 2. 🚀 هذا الأمر يقوم بتغيير اسم التطبيق تلقائياً إلى Smart Wallet 🚀
+      - run: |
+          sed -i 's/android:label=".*"/android:label="Smart Wallet"/' android/app/src/main/AndroidManifest.xml
+
       - run: flutter pub get
-      - run: flutter build apk --debug
+      
+      # 3. تشغيل أداة الأيقونات التلقائية لتغيير شعار التطبيق
+      - run: flutter pub run flutter_launcher_icons
+
+      # 4. بناء نسخة نظامية رسمية وخفيفة (Release)
+      - run: flutter build apk --release --split-per-abi
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: Smart-Wallet-APK
+          path: build/app/outputs/flutter-apk/*-release.apk
